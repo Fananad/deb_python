@@ -227,7 +227,9 @@ class PostViewsTests(TestCase):
             'posts:profile_follow',
             kwargs={'username': PostViewsTests.author_auth.username})
         )
-        Follow.objects.filter(author=self.author_auth, user=self.follower_user).exists()
+        Follow.objects.filter(author=self.author_auth,
+                              user=self.follower_user
+                              ).exists()
         self.assertTrue
         follow_count = Follow.objects.all().count()
         self.assertEqual(follow_count, 1)
@@ -238,7 +240,9 @@ class PostViewsTests(TestCase):
             'posts:profile_unfollow',
             kwargs={'username': PostViewsTests.author_auth.username})
         )
-        Follow.objects.filter(author=self.author_auth, user=self.follower_user).exists()
+        Follow.objects.filter(author=self.author_auth,
+                              user=self.follower_user
+                              ).exists()
         self.assertTrue
         unfollow_count = Follow.objects.all().count()
         self.assertEqual(unfollow_count, 0)
