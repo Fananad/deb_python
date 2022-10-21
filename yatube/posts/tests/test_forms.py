@@ -257,7 +257,6 @@ class PostFormTests(TestCase):
             response, f'/auth/login/?next=/posts/{post.pk}/comment/'
         )
 
-
     def test_author_can_add_comment(self):
         """
         Тест на добавление комментария авторизованным пользователем
@@ -271,3 +270,4 @@ class PostFormTests(TestCase):
             data=form_data,
             follow=True
         )
+        self.assertTrue(post, response)
