@@ -197,7 +197,7 @@ class PostViewsTests(TestCase):
 
     def test_post_edit_page_show_correct_context(self):
         """
-        Шаблон create_post для post_edt сформирован
+        Шаблон create_post для post_edit сформирован
         с правильным контекстом.
         """
         response = self.authorized_client.get(PostViewsTests.page_post_edit)
@@ -210,9 +210,9 @@ class PostViewsTests(TestCase):
         Проверка хранения и очищения кэша для index.
         """
         first_response = self.authorized_client.get(PostViewsTests.page_index)
-        post = Post.objects.get(pk=1)
-        post.text = 'Измененный текст'
-        post.save()
+        self.post.pk
+        self.post.text = 'Измененный текст'
+        self.post.save()
         second_response = self.authorized_client.get(PostViewsTests.page_index)
         self.assertEqual(first_response.content, second_response.content)
         cache.clear()
@@ -222,18 +222,24 @@ class PostViewsTests(TestCase):
     def test_authorized_user_can_follow(self):
         """
         Авторизованный пользователь может подписаться на автора
-        и отписаться.
         """
         self.follower_client.get(reverse(
             'posts:profile_follow',
             kwargs={'username': PostViewsTests.author_auth.username})
         )
+        Follow.objects.filter(author=self.author_auth, user=self.follower_user).exists()
+        self.assertTrue
         follow_count = Follow.objects.all().count()
         self.assertEqual(follow_count, 1)
+
+    def test_authorized_user_can_unfollow(self):
+
         self.follower_client.get(reverse(
             'posts:profile_unfollow',
             kwargs={'username': PostViewsTests.author_auth.username})
         )
+        Follow.objects.filter(author=self.author_auth, user=self.follower_user).exists()
+        self.assertTrue
         unfollow_count = Follow.objects.all().count()
         self.assertEqual(unfollow_count, 0)
 

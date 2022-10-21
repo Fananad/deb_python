@@ -256,3 +256,18 @@ class PostFormTests(TestCase):
         self.assertRedirects(
             response, f'/auth/login/?next=/posts/{post.pk}/comment/'
         )
+
+
+    def test_author_can_add_comment(self):
+        """
+        Тест на добавление комментария авторизованным пользователем
+        """
+        post = self.post
+        form_data = {
+            'text': 'комментарий',
+        }
+        response = self.authorized_client.post(
+            reverse('posts:add_comment', kwargs={'post_id': self.post.pk}),
+            data=form_data,
+            follow=True
+        )
