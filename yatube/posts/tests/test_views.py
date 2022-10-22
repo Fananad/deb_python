@@ -211,7 +211,7 @@ class PostViewsTests(TestCase):
         Проверка хранения и очищения кэша для index.
         """
         response = self.client.get(reverse('posts:index'))
-        Post.objects.get(id=1).delete()
+        Post.objects.get(pk=self.post.pk).delete()
         response_del = self.client.get(reverse('posts:index'))
         self.assertEqual(response.content, response_del.content)
         cache.clear()
@@ -226,9 +226,6 @@ class PostViewsTests(TestCase):
             'posts:profile_follow',
             kwargs={'username': PostViewsTests.author_auth.username})
         )
-        Follow.objects.filter(author=self.author_auth,
-                              user=self.follower_user
-                              ).exists()
         follow_count = self.user_2.follower.count()
         self.authorized_client.force_login(self.user_2)
         self.authorized_client.get(reverse(
@@ -236,7 +233,7 @@ class PostViewsTests(TestCase):
             follow=True
         )
         follow_count_2 = self.user_2.follower.count()
-        self.assertEqual(follow_count + 0, follow_count_2)
+        self.assertEqual(follow_count, follow_count_2)
 
     def test_authorized_user_can_unfollow(self):
 
@@ -244,16 +241,13 @@ class PostViewsTests(TestCase):
             'posts:profile_unfollow',
             kwargs={'username': PostViewsTests.author_auth.username})
         )
-        Follow.objects.filter(author=self.author_auth,
-                              user=self.follower_user
-                              ).exists()
         follow_count = self.user_2.follower.count()
         self.authorized_client.get(reverse(
             'posts:profile_unfollow', kwargs={'username': 'Test_name'}),
             follow=True
         )
         follow_count_1 = self.user_2.follower.count()
-        self.assertEqual(follow_count, follow_count_1 + 0)
+        self.assertEqual(follow_count, follow_count_1)
 
     def test_new_post_appears_in_the_subscribers(self):
         """

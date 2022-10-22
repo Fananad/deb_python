@@ -1,10 +1,7 @@
-from core.models import CreatedModel
-# Я если честно не понимаю суть замечания здесь
-# Мне советовали использовать flake8 isort, который поправляет импорты,
-# никогда проблем с ними не было,
-# вы можете подробнее сказать где и какой импорт неправильно написан?
 from django.contrib.auth import get_user_model
 from django.db import models
+
+from core.models import CreatedModel
 
 User = get_user_model()
 MAX_CHAR = 15

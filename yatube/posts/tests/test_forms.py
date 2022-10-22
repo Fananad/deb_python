@@ -1,8 +1,9 @@
 import shutil
 import tempfile
-from http import HTTPStatus
 
+from http import HTTPStatus
 from django import forms
+
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
@@ -277,13 +278,8 @@ class PostFormTests(TestCase):
             'text': 'комментарий',
         }
         comments_count = Comment.objects.count()
-        response = self.authorized_client.post(
-            reverse('posts:add_comment', kwargs={'post_id': self.post.pk}),
-            data=form_data,
-            follow=True
-        )
-        self.assertTrue(post, response)
         self.authorized_client.post(reverse(
             'posts:add_comment', kwargs={'post_id': f'{self.post.id}'}),
             data=form_data, follow=True)
-        self.assertEqual(Comment.objects.count(), comments_count + 2)
+        self.assertEqual(Comment.objects.count(), comments_count + 1)
+        post.comments.filter(text='комментарий').exists()
