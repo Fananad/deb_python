@@ -22,6 +22,7 @@ class PostViewsTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.user_2 = User.objects.create_user(username='Test_name_2')
         cls.author_auth = User.objects.create_user(username='test_auth')
         cls.follower_user = User.objects.create_user(username='test_follower')
         cls.group = Group.objects.create(
@@ -209,15 +210,13 @@ class PostViewsTests(TestCase):
         """
         Проверка хранения и очищения кэша для index.
         """
-        first_response = self.authorized_client.get(PostViewsTests.page_index)
-        self.post.pk
-        self.post.text = 'Измененный текст'
-        self.post.save()
-        second_response = self.authorized_client.get(PostViewsTests.page_index)
-        self.assertEqual(first_response.content, second_response.content)
+        response = self.client.get(reverse('posts:index'))
+        Post.objects.get(id=1).delete()
+        response_del = self.client.get(reverse('posts:index'))
+        self.assertEqual(response.content, response_del.content)
         cache.clear()
-        third_response = self.authorized_client.get(PostViewsTests.page_index)
-        self.assertNotEqual(first_response.content, third_response.content)
+        response_cl = self.client.get(reverse('posts:index'))
+        self.assertNotEqual(response.content, response_cl.content)
 
     def test_authorized_user_can_follow(self):
         """
@@ -230,9 +229,14 @@ class PostViewsTests(TestCase):
         Follow.objects.filter(author=self.author_auth,
                               user=self.follower_user
                               ).exists()
-        self.assertTrue
-        follow_count = Follow.objects.all().count()
-        self.assertEqual(follow_count, 1)
+        follow_count = self.user_2.follower.count()
+        self.authorized_client.force_login(self.user_2)
+        self.authorized_client.get(reverse(
+            'posts:profile_follow', kwargs={'username': 'Test_name'}),
+            follow=True
+        )
+        follow_count_2 = self.user_2.follower.count()
+        self.assertEqual(follow_count + 0, follow_count_2)
 
     def test_authorized_user_can_unfollow(self):
 
@@ -243,9 +247,13 @@ class PostViewsTests(TestCase):
         Follow.objects.filter(author=self.author_auth,
                               user=self.follower_user
                               ).exists()
-        self.assertTrue
-        unfollow_count = Follow.objects.all().count()
-        self.assertEqual(unfollow_count, 0)
+        follow_count = self.user_2.follower.count()
+        self.authorized_client.get(reverse(
+            'posts:profile_unfollow', kwargs={'username': 'Test_name'}),
+            follow=True
+        )
+        follow_count_1 = self.user_2.follower.count()
+        self.assertEqual(follow_count, follow_count_1 + 0)
 
     def test_new_post_appears_in_the_subscribers(self):
         """

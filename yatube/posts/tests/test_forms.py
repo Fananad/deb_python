@@ -46,6 +46,7 @@ class PostFormTests(TestCase):
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
     def setUp(self):
+        self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(PostFormTests.author_auth)
         self.authorized_client_not_author = Client()
@@ -245,7 +246,7 @@ class PostFormTests(TestCase):
             ).exists()
         )
 
-    def test_anonym_dont__create_comment(self):
+    def test_anonym_dont_create_comment(self):
         """
         Проверка запрета на комментирование анонимом
         """
@@ -256,6 +257,16 @@ class PostFormTests(TestCase):
         self.assertRedirects(
             response, f'/auth/login/?next=/posts/{post.pk}/comment/'
         )
+        comments_count = Comment.objects.count()
+        form_data = {
+            'post': self.post,
+            'author': self.author_auth,
+            'text': "Тестовый комментарий",
+        }
+        self.guest_client.post(reverse(
+            'posts:add_comment', kwargs={'post_id': f'{self.post.id}'}),
+            data=form_data, follow=True)
+        self.assertEqual(Comment.objects.count(), comments_count)
 
     def test_author_can_add_comment(self):
         """
@@ -265,9 +276,14 @@ class PostFormTests(TestCase):
         form_data = {
             'text': 'комментарий',
         }
+        comments_count = Comment.objects.count()
         response = self.authorized_client.post(
             reverse('posts:add_comment', kwargs={'post_id': self.post.pk}),
             data=form_data,
             follow=True
         )
         self.assertTrue(post, response)
+        self.authorized_client.post(reverse(
+            'posts:add_comment', kwargs={'post_id': f'{self.post.id}'}),
+            data=form_data, follow=True)
+        self.assertEqual(Comment.objects.count(), comments_count + 2)
