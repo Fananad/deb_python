@@ -1,8 +1,7 @@
 import shutil
-import tempfile
-
-from http import HTTPStatus
-from django import forms
+import tempfile              # Я вроде прочитал документацию и поправил
+from django import forms     # хотя если честно, я вроде
+from http import HTTPStatus  # ничего не нашёл в других файлах...
 
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
