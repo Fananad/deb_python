@@ -1,4 +1,4 @@
-# hw05_final
+# Привет, я интернет форум для общения на любые темы!!!
 
-[![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
-# deb_python
+Для корректной работы необходимо установить необходимые пакеты в виртуальныю среду из файла requirements.txt и запустить веб сервер 
+
